@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\NewsService;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -12,9 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(NewsService::class, function ($app) {
-            return new NewsService();
-        });
+        //
     }
 
     /**
@@ -22,6 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // JsonResource::withoutWrapping();
     }
 }

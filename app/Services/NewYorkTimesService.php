@@ -4,20 +4,21 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use App\Contracts\NewsService;
-use App\Enums\NewsProviderEnum;
+use App\Traits\ImportArticles;
 
 class NewYorkTimesService implements NewsService
 {
-    private string $config;
+    use ImportArticles;
 
-    public ?string $query;
+    private array $config;
+
+    public ?string $query = null;
     public int $pageNo = 1;
-    public $pageSize = null;
+    public null $pageSize = null;
 
-    public ?string $from;
-    public ?string $to;
+    public ?string $from = null;
+    public ?string $to = null;
 
     function __construct()
     {
@@ -65,7 +66,6 @@ class NewYorkTimesService implements NewsService
      */
     public function pageSize(int $pageSize): self
     {
-        $this->pageSize = null;
         return $this;
     }
 
@@ -80,21 +80,22 @@ class NewYorkTimesService implements NewsService
         return $this;
     }
 
-    public function getNews(): array
+    public function getArticles(): array
     {
-        try {
-            $articles = Http::get($this->config['url'] . $this->config['article_endpoint'], [
-                'api-key' => $this->config['api_key'],
-                'q' => $this->query,
-                'begin_date' => $this->from,
-                'end_date' => $this->to,
-                'page' => $this->pageNo,
-            ])->throw()->json('response.docs');
+        // try {
+        $articles = Http::get($this->config['base_url'] . $this->config['article_endpoint'], [
+            'api-key' => $this->config['api_key'],
+            'q' => $this->query,
+            'begin_date' => $this->from,
+            'end_date' => $this->to,
+            'page' => $this->pageNo,
+            'sort' => 'newest',
+        ])->throw()->json('response.docs');
 
-            return $this->normalizeData($articles);
-        } catch (\Exception $e) {
-            Log::error("Error while fetching news from New Yok Times: {$e->getMessage()}");
-        }
+        return $this->normalizeData($articles);
+        // } catch (\Exception $e) {
+        //     Log::error("Error while fetching news from New Yok Times: {$e->getMessage()}");
+        // }
         return [];
     }
 
@@ -104,12 +105,12 @@ class NewYorkTimesService implements NewsService
             return [
                 'author' => !empty($v['byline']['person']) ?  preg_replace('/\s+/', ' ', $v['byline']['person'][0]['firstname'] . " " . $v['byline']['person'][0]['middlename'] . " " . $v['byline']['person'][0]['lastname']) : null,
                 'source' => $v['source'] ?? null,
-                'title' => $v['headline']['main'] ?? null,
+                'title' => $v['headline']['main'],
                 'content' => $v['lead_paragraph'] ?? null,
-                'image' => !empty($v['multimedia'][0]['url']) ? "https://www.nytimes.com/" . $v['multimedia'][0]['url'] :  null,
-                'published_at' => $v['pub_date'] ?? null,
-                'url' => $v['web_url'] ?? null,
-                'news_provider' => NewsProviderEnum::NEW_YORK_TIMES->value,
+                'category' => $v['subsection_name'] ?? null,
+                'image_url' => !empty($v['multimedia'][0]['url']) ? "https://www.nytimes.com/" . $v['multimedia'][0]['url'] :  null,
+                'published_at' => $v['pub_date'] ? Carbon::parse($v['pub_date']) : Carbon::now(),
+                'source_url' => $v['web_url'] ?? null,
             ];
         }, $articles);
     }

@@ -15,9 +15,10 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->text('title');
+            $table->string('slug', 500)->unique();
             $table->foreignId('author_id')->nullable()->constrained('authors')->onDelete('set null');
-            $table->foreignId('category_id')->constrained('categories')->onDelete('restrict');
-            $table->foreignId('source_id')->constrained('sources')->onDelete('restrict');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('restrict');
+            $table->foreignId('source_id')->nullable()->constrained('sources')->onDelete('restrict');
             $table->string('source_url')->nullable();
             $table->string('image_url')->nullable();
             $table->longText('content')->nullable();

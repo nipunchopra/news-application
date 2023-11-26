@@ -6,18 +6,20 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Contracts\NewsService;
-use App\Enums\NewsProviderEnum;
+use App\Traits\ImportArticles;
 
 class NewsAPIService implements NewsService
 {
-    private string $config;
+    use ImportArticles;
 
-    public ?string $query;
+    private array $config;
+
+    public ?string $query = null;
     public int $pageNo = 1;
     public int $pageSize = 100;
 
-    public ?string $from;
-    public ?string $to;
+    public ?string $from = null;
+    public ?string $to = null;
 
     function __construct()
     {
@@ -79,16 +81,17 @@ class NewsAPIService implements NewsService
         return $this;
     }
 
-    public function getNews(): array
+    public function getArticles(): array
     {
         try {
-            $articles = Http::get($this->config['url'] . $this->config['article_endpoint'], [
-                'api-key' => $this->config['api_key'],
+            $articles = Http::get($this->config['base_url'] . $this->config['article_endpoint'], [
+                'apiKey' => $this->config['api_key'],
                 'q' => $this->query,
                 'from' => $this->from,
                 'to' => $this->to,
                 'pageSize' =>  $this->pageSize,
                 'page' => $this->pageNo,
+                'country' => 'us',
             ])->throw()->json('articles');
 
             return $this->normalizeData($articles);
@@ -104,12 +107,11 @@ class NewsAPIService implements NewsService
             return [
                 'author' => $v['author'] ?? null,
                 'source' => $v['source']['name'] ?? null,
-                'title' => $v['title'] ?? null,
+                'title' => $v['title'],
                 'content' => $v['content'] ?? null,
-                'image' => $v['urlToImage'] ?? null,
-                'published_at' => $v['publishedAt'] ?? null,
-                'url' => $v['url'] ?? null,
-                'news_provider' => NewsProviderEnum::NEWS_API->value,
+                'image_url' => $v['urlToImage'] ?? null,
+                'published_at' => $v['publishedAt'] ? Carbon::parse($v['publishedAt']) : Carbon::now(),
+                'source_url' => $v['url'] ?? null,
             ];
         }, $articles);
     }

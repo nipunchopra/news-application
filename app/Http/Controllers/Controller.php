@@ -11,7 +11,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    public function successResponse(string $message, array|object $data = []): JsonResponse
+    public function successResponse(string $message, $data = []): JsonResponse
     {
         return response()->json([
             'status' => true,
@@ -29,15 +29,5 @@ class Controller extends BaseController
             'errors' => $errors,
             'data' => $data
         ], $statusCode);
-    }
-
-    public function validationErrorResponse(array|object $errors, array $data = []): JsonResponse
-    {
-        return response()->json([
-            'status' => false,
-            'message' => 'Validation Error',
-            'errors' => $errors,
-            'data' => $data
-        ], 422);
     }
 }

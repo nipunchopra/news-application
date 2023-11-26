@@ -17,8 +17,7 @@ return [
         'api_key' => env('NEWS_NEWS_API_API_KEY'),
 
         'base_url' => 'https://newsapi.org/v2',
-        'article_endpoint' => '/',
-        'source_endpoint' => '/top-headlines/sources',
+        'article_endpoint' => '/top-headlines', // '/everything' endpoint is not supported by without search string/query thats why I am using '/top-headlines' endpoint
     ],
 
     NewsProviderEnum::THE_GUARDIAN->value => [
@@ -26,7 +25,6 @@ return [
 
         'base_url' => 'https://content.guardianapis.com',
         'article_endpoint' => '/search',
-        'category_endpoint' => '/sections',
     ],
 
     NewsProviderEnum::NEW_YORK_TIMES->value => [

@@ -13,5 +13,5 @@ interface NewsService
     public function pageNo(int $pageNo): self;
     public function pageSize(int $pageSize): self;
 
-    public function getNews(): array;
+    public function getArticles(): array;
 }

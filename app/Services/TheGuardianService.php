@@ -7,17 +7,20 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Contracts\NewsService;
 use App\Enums\NewsProviderEnum;
+use App\Traits\ImportArticles;
 
 class TheGuardianService implements NewsService
 {
-    private string $config;
+    use ImportArticles;
 
-    public ?string $query;
+    private array $config;
+
+    public ?string $query = null;
     public int $pageNo = 1;
     public int $pageSize = 50;
 
-    public ?string $from;
-    public ?string $to;
+    public ?string $from = null;
+    public ?string $to = null;
 
     function __construct()
     {
@@ -79,12 +82,11 @@ class TheGuardianService implements NewsService
         return $this;
     }
 
-    public function getNews(): array
+    public function getArticles(): array
     {
         try {
-            $articles = Http::get($this->config['url'] . $this->config['article_endpoint'], [
+            $articles = Http::get($this->config['base_url'] . $this->config['article_endpoint'], [
                 'api-key' => $this->config['api_key'],
-                'q' => $this->query,
                 'from-date' => $this->from,
                 'to-date' => $this->to,
                 'page' => $this->pageNo,
@@ -107,12 +109,12 @@ class TheGuardianService implements NewsService
             return [
                 'author' => $v['fields']['byline'] ?? null,
                 'source' => $v['fields']['publication'] ?? null,
-                'title' => $v['fields']['headline'] ?? null,
+                'title' => $v['fields']['headline'],
                 'content' => $v['fields']['bodyText'] ?? null,
-                'image' => $v['fields']['thumbnail'] ?? null,
-                'published_at' => $v['webPublicationDate'] ?? null,
-                'url' => $v['webUrl'] ?? null,
-                'news_provider' => NewsProviderEnum::THE_GUARDIAN->value,
+                'category' => $v['sectionName'] ?? null,
+                'image_url' => $v['fields']['thumbnail'] ?? null,
+                'published_at' => $v['webPublicationDate'] ? Carbon::parse($v['webPublicationDate']) : Carbon::now(),
+                'source_url' => $v['webUrl'] ?? null,
             ];
         }, $articles);
     }

@@ -17,7 +17,7 @@ return [
         'api_key' => env('NEWS_NEWS_API_API_KEY'),
 
         'base_url' => 'https://newsapi.org/v2',
-        'article_endpoint' => '/top-headlines', // '/everything' endpoint is not supported by without search string/query thats why I am using '/top-headlines' endpoint
+        'article_endpoint' => '/everything',
     ],
 
     NewsProviderEnum::THE_GUARDIAN->value => [

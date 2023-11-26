@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NewsProviderEnum;
 use App\Http\Requests\ArticleListRequest;
 use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\ArticleResource;
+use App\Jobs\SyncNewsFromNewsAPI;
 use App\Models\Article;
+use App\Services\NewsAPIService;
+use Illuminate\Queue\Jobs\Job;
+use Illuminate\Support\Facades\Log;
+
 
 class ArticleController extends Controller
 {

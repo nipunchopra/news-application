@@ -21,6 +21,7 @@ class Article extends Model
         'source_url',
         'image_url',
         'content',
+        'description',
         'news_provider',
         'published_at',
     ];

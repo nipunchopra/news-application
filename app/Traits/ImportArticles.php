@@ -7,7 +7,6 @@ use App\Models\Article;
 use App\Models\Author;
 use App\Models\Category;
 use App\Models\Source;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
@@ -54,18 +53,21 @@ trait ImportArticles
                         );
                     }
 
-                    Article::firstOrCreate([
-                        'title' => $article['title'],
-                        'slug' => $articleSlug,
-                        'author_id' => $author?->id,
-                        'category_id' => $category?->id,
-                        'source_id' => $source?->id,
-                        'source_url' => $article['source_url'],
-                        'image_url' => $article['image_url'],
-                        'content' => $article['content'],
-                        'news_provider' => $newsProvider->value,
-                        'published_at' => ($article['published_at'])?->toDateTimeString(),
-                    ]);
+                    Article::updateOrCreate(
+                        ['slug' => $articleSlug],
+                        [
+                            'title' => $article['title'],
+                            'author_id' => $author?->id,
+                            'category_id' => $category?->id,
+                            'source_id' => $source?->id,
+                            'source_url' => $article['source_url'],
+                            'image_url' => $article['image_url'],
+                            'content' => $article['content'],
+                            'description' => $article['description'],
+                            'news_provider' => $newsProvider->value,
+                            'published_at' => ($article['published_at'])?->toDateTimeString()
+                        ]
+                    );
                 } catch (\Exception $e) {
                     Log::error("Error while inserting articles into database: {$e->getMessage()}");
                 }

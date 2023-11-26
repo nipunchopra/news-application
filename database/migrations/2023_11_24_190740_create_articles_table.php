@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->text('title');
             $table->string('slug', 500)->unique();
+            $table->text('description')->nullable();
             $table->foreignId('author_id')->nullable()->constrained('authors')->onDelete('set null');
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('restrict');
             $table->foreignId('source_id')->nullable()->constrained('sources')->onDelete('restrict');
@@ -26,7 +27,7 @@ return new class extends Migration
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
 
-            $table->fullText(['title', 'content']);
+            $table->fullText(['title', 'content', 'description']);
         });
     }
 

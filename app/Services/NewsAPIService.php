@@ -91,7 +91,7 @@ class NewsAPIService implements NewsService
                 'to' => $this->to,
                 'pageSize' =>  $this->pageSize,
                 'page' => $this->pageNo,
-                'country' => 'us',
+                'domains' => !$this->query ? 'bbc.co.uk,techcrunch.com,thenextweb.com' : null, //query or domain one of them is required for search
             ])->throw()->json('articles');
 
             return $this->normalizeData($articles);
@@ -109,6 +109,7 @@ class NewsAPIService implements NewsService
                 'source' => $v['source']['name'] ?? null,
                 'title' => $v['title'],
                 'content' => $v['content'] ?? null,
+                'description' => $v['description'] ?? null,
                 'image_url' => $v['urlToImage'] ?? null,
                 'published_at' => $v['publishedAt'] ? Carbon::parse($v['publishedAt']) : Carbon::now(),
                 'source_url' => $v['url'] ?? null,

@@ -107,6 +107,7 @@ class NewYorkTimesService implements NewsService
                 'source' => $v['source'] ?? null,
                 'title' => $v['headline']['main'],
                 'content' => $v['lead_paragraph'] ?? null,
+                'description' => $v['abstract'] ?? null,
                 'category' => $v['subsection_name'] ?? null,
                 'image_url' => !empty($v['multimedia'][0]['url']) ? "https://www.nytimes.com/" . $v['multimedia'][0]['url'] :  null,
                 'published_at' => $v['pub_date'] ? Carbon::parse($v['pub_date']) : Carbon::now(),

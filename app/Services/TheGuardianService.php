@@ -91,7 +91,7 @@ class TheGuardianService implements NewsService
                 'to-date' => $this->to,
                 'page' => $this->pageNo,
                 'page-size' =>  $this->pageSize,
-                'show-fields' => 'headline,bodyText,publication,byline,thumbnail',
+                'show-fields' => 'headline,bodyText,publication,byline,thumbnail,trailText',
                 'query-fields' => $this->query ? 'body,headline' : null,
                 'q' => $this->query,
             ])->throw()->json('response.results');
@@ -112,6 +112,7 @@ class TheGuardianService implements NewsService
                 'title' => $v['fields']['headline'],
                 'content' => $v['fields']['bodyText'] ?? null,
                 'category' => $v['sectionName'] ?? null,
+                'description' => $v['fields']['trailText'] ?? null,
                 'image_url' => $v['fields']['thumbnail'] ?? null,
                 'published_at' => $v['webPublicationDate'] ? Carbon::parse($v['webPublicationDate']) : Carbon::now(),
                 'source_url' => $v['webUrl'] ?? null,
